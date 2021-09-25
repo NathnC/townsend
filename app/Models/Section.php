@@ -10,7 +10,7 @@ class Section extends Model
 {
     use HasFactory;
 
-    public function products(): BelongsToMany
+    public function products()
     {
         return $this->belongsToMany(
             StoreProduct::class,

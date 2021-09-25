@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;.
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -12,8 +12,10 @@ class StoreProduct extends Model
     use HasFactory;
 
     public $table = 'store_products';
-
-    public function sections(): BelongsToMany
+    /**
+     * @var mixed
+     */
+    public function sections()
     {
         return $this->belongsToMany(
             Section::class,
@@ -27,8 +29,76 @@ class StoreProduct extends Model
             ->orderBy('position', 'ASC');
     }
 
-    public function artist(): BelongsTo
+    public function artist()
     {
         return $this->belongsTo(Artist::class, 'artist_id', 'id');
+    }
+
+    public function getImage($imgDomain)
+    {
+        if (strlen($this->image_format) > 2) {
+            return $imgDomain."/$this->id.".$this->image_format;
+        }
+        return $imgDomain."noimage.jpg";
+    }
+
+    /**
+     * @param $product
+     * @param $sessionCurrency
+     * @return mixed
+     */
+    public function getProductCurrencyToUse($sessionCurrency)
+    {
+        switch ($sessionCurrency) {
+            case "USD":
+                $price = $this->dollar_price;
+                break;
+            case "EUR":
+                $price = $this->euro_price;
+                break;
+            default:
+                $price = $this->price;
+                break;
+        }
+        return $price;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isProductAvailableToDisplay()
+    {
+        if ($this->launch_date !== "0000-00-00 00:00:00" && !isset($_SESSION['preview_mode'])) {
+            $launch = strtotime($this->launch_date);
+            if ($launch > time()) {
+                return false;
+            }
+        }
+
+        if ($this->remove_date !== "0000-00-00 00:00:00") {
+            $remove = strtotime($this->remove_date);
+            if ($remove < time()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function checkProductInDisabledCountries()
+    {
+        if ($this->disabled_countries !== '') {
+            $countries = explode(',', $this->disabled_countries);
+            $geocode = $this->getGeocode();
+            $country_code = $geocode['country'];
+
+            if (in_array($country_code, $countries, true)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
