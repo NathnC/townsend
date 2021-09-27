@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use phpDocumentor\Reflection\Types\Boolean;
+use phpDocumentor\Reflection\Types\String_;
 
 class StoreProduct extends Model
 {
@@ -15,7 +17,7 @@ class StoreProduct extends Model
     /**
      * @var mixed
      */
-    public function sections()
+    public function sections(): BelongsToMany
     {
         return $this->belongsToMany(
             Section::class,
@@ -29,11 +31,15 @@ class StoreProduct extends Model
             ->orderBy('position', 'ASC');
     }
 
-    public function artist()
+    public function artist(): BelongsTo
     {
         return $this->belongsTo(Artist::class, 'artist_id', 'id');
     }
 
+    /**
+     * @param $imgDomain
+     * @return string
+     */
     public function getImage($imgDomain)
     {
         if (strlen($this->image_format) > 2) {
@@ -66,7 +72,7 @@ class StoreProduct extends Model
     /**
      * @return bool
      */
-    public function isProductAvailableToDisplay()
+    public function isProductAvailableToDisplay(): Boolean
     {
         if ($this->launch_date !== "0000-00-00 00:00:00" && !isset($_SESSION['preview_mode'])) {
             $launch = strtotime($this->launch_date);
@@ -88,7 +94,7 @@ class StoreProduct extends Model
     /**
      * @return bool
      */
-    public function checkProductInDisabledCountries()
+    public function checkProductInDisabledCountries(): Boolean
     {
         if ($this->disabled_countries !== '') {
             $countries = explode(',', $this->disabled_countries);
