@@ -40,7 +40,7 @@ class StoreProduct extends Model
      * @param $imgDomain
      * @return string
      */
-    public function getImage($imgDomain)
+    public function getImage($imgDomain): string
     {
         if (strlen($this->image_format) > 2) {
             return $imgDomain."/$this->id.".$this->image_format;
@@ -72,7 +72,7 @@ class StoreProduct extends Model
     /**
      * @return bool
      */
-    public function isProductAvailableToDisplay(): Boolean
+    public function isProductAvailableToDisplay(): bool
     {
         if ($this->launch_date !== "0000-00-00 00:00:00" && !isset($_SESSION['preview_mode'])) {
             $launch = strtotime($this->launch_date);
@@ -94,7 +94,7 @@ class StoreProduct extends Model
     /**
      * @return bool
      */
-    public function checkProductInDisabledCountries(): Boolean
+    public function checkProductInDisabledCountries(): bool
     {
         if ($this->disabled_countries !== '') {
             $countries = explode(',', $this->disabled_countries);
