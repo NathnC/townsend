@@ -14,7 +14,7 @@ class store_products
      */
     public function __construct()
     {
-        $this->imagesDomain = config('app.images_domain');
+        $this->imagesDomain = config('app.image_domain');
     }
 
     /**

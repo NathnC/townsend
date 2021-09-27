@@ -19,5 +19,7 @@ Route::get('/', function () {
 });
 
 
-Route::get('/products', [ProductsController::class, 'index']);
-Route::get('/products/{name}', [ProductsController::class, 'show']);
+Route::prefix('products')->group(function () {
+    Route::get('/', [ProductsController::class, 'index']);
+    Route::get('/{name}', [ProductsController::class, 'show']);
+});

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\store_products;
 use App\store_products_og;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use function Couchbase\defaultDecoder;
 
 class ProductsController extends Controller
@@ -25,14 +26,23 @@ class ProductsController extends Controller
 
     public function index()
     {
-        $get = $this->storeProducts->sectionProducts($this->storeId);
-        return response()->json(json_encode($get));
+        try {
+            $get = $this->storeProducts->sectionProducts($this->storeId);
+            return response()->json(json_encode($get, JSON_THROW_ON_ERROR));
+        } catch (\Exception $exception) {
+            Log::warning($exception->getMessage());
+            return response()->json('sectionProducts search failed!', 500);
+        }
     }
 
     public function show($sectionName)
     {
-        $get = $this->storeProducts->sectionProducts($this->storeId, $sectionName, 20,8,'az');
-        dd($get);
-        return response()->json(json_encode($get));
+        try {
+            $get = $this->storeProducts->sectionProducts($this->storeId, $sectionName, 20,8,'az');
+            return response()->json(json_encode($get, JSON_THROW_ON_ERROR));
+        } catch (\Exception $exception) {
+            Log::warning($exception->getMessage());
+            return response()->json('sectionProducts search failed!', 500);
+        }
     }
 }
